@@ -10,8 +10,10 @@ local hasFired = false
 
 tool.Equipped:Connect(function()
 	local character = tool.Parent
-	local rightHand = character:FindFirstChild("RightHand")
-	rightGrip = rightHand and rightHand:FindFirstChild("RightGrip")
+	--local rightHand = character:FindFirstChild("RightHand")
+	local rightHand = character.RightHand
+	--rightGrip = rightHand and rightHand:FindFirstChild("RightGrip")
+	rightGrip = rightHand and rightHand.RightGrip
 
 	connection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		if not gameProcessed and input.KeyCode == Enum.KeyCode.Backspace and rightGrip then
