@@ -8,23 +8,22 @@ local hasFired = false
 
 
 tool.Equipped:Connect(function()
-	local character = tool.Parent
-	local rightHand
-	local rightGrip
-
-	-- Check for R15 first (RightHand exists)
-	if character:FindFirstChild("RightHand") then
-		rightHand = character.RightHand
-		rightGrip = rightHand.RightGrip
-	else
-		-- Fallback to R6 (Right Arm)
-		rightHand = character["Right Arm"]
-		rightGrip = rightHand.RightGrip
-	end
-
 	connection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-		if not gameProcessed and input.KeyCode == Enum.KeyCode.Backspace and rightGrip then
-			print("hello world")
+		if not gameProcessed and input.KeyCode == Enum.KeyCode.Backspace then
+			local character = tool.Parent
+			local rightHand
+			local rightGrip
+
+			-- Check for R15 first (RightHand exists)
+			if character:FindFirstChild("RightHand") then
+				rightHand = character.RightHand
+				rightGrip = rightHand.RightGrip
+			else
+				-- Fallback to R6 (Right Arm)
+				rightHand = character["Right Arm"]
+				rightGrip = rightHand.RightGrip
+			end
+			--print("Tool dropped")
 			DropToolRequest:FireServer(tool, rightGrip)
 		end
 	end)
@@ -36,4 +35,3 @@ tool.Unequipped:Connect(function()
 		connection = nil
 	end
 end)
- 
