@@ -5,7 +5,12 @@ DropToolRequest.OnServerEvent:Connect(function(player, tool, rightGrip)
 	if not tool or not player then return end
 
 	local currentPivot = tool:GetPivot() -- We want then direction of the tool to use later
-	rightGrip:Destroy() -- Destroys weldm delivering the character of attachment of tool
+	if rightGrip then
+		rightGrip:Destroy() -- Remove tool weld to player, normally done by Roblox
+	else
+		warn("rightGrip was nil — likely due to rapid equip/drop")
+	end
+
 	tool.Parent = workspace -- Tool no longer a child of character
 
 	local handle = tool.Handle
