@@ -64,12 +64,26 @@ tool.Equipped:Connect(function()
 		mobileButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
 		mobileButton.TextColor3 = Color3.new(1, 1, 1)
 		mobileButton.Parent = screenGui
+		
+		-- 🔵 Add rounded corners
+		local uiCorner = Instance.new("UICorner")
+		uiCorner.CornerRadius = UDim.new(0, 12) -- adjust as desired
+		uiCorner.Parent = mobileButton
+
+		local tapCount = 0
 
 		mobileButton.MouseButton1Click:Connect(function()
-			if screenGui then
-				screenGui:Destroy()
+			tapCount += 1
+
+			if tapCount >= 3 then
+				if screenGui then
+					screenGui:Destroy()
 				end
-			dropTool()
+				dropTool()
+				tapCount = 0 -- reset for next time
+			else
+				mobileButton.Text = "Tap " .. (3 - tapCount) .. " more"
+			end
 		end)
 	end
 end)
