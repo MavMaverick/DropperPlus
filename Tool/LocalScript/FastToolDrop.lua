@@ -38,16 +38,20 @@ tool.Equipped:Connect(function()
 		-- “If the player pressed the Backspace key, and the game didn’t already use that input for something else,
 		-- then run the code inside.”
 		if not gameProcessed and input.KeyCode == Enum.KeyCode.Backspace then
+			if screenGui then -- If the GUI is already present if mobile detected but using keyboard, destroy it
+				screenGui:Destroy()
+			end
 			dropTool()
 		end
 	end)
 	
 	-- Mobile support: add a screen button if on touch
 	if UserInputService.TouchEnabled and not mobileButton then
+		print("Tool equippd")
 		local player = game.Players.LocalPlayer
 		local playerGui = player:WaitForChild("PlayerGui")
 
-		local screenGui = Instance.new("ScreenGui")
+		screenGui = Instance.new("ScreenGui")
 		screenGui.Name = "DropToolGui"
 		screenGui.ResetOnSpawn = false
 		screenGui.Parent = playerGui
@@ -62,12 +66,18 @@ tool.Equipped:Connect(function()
 		mobileButton.Parent = screenGui
 
 		mobileButton.MouseButton1Click:Connect(function()
+			if screenGui then
+				screenGui:Destroy()
+				end
 			dropTool()
 		end)
 	end
 end)
 
 tool.Unequipped:Connect(function()
+	if screenGui then
+		screenGui:Destroy()
+		end
 	if connection then
 		connection:Disconnect()
 		connection = nil
