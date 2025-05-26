@@ -28,6 +28,8 @@ local function dropTool()
 	end
 end
 
+local mobileButton
+
 tool.Equipped:Connect(function()
 		
 		-- Storing the connection lets you disconnect it later (e.g., when the tool is unequipped)
@@ -39,6 +41,30 @@ tool.Equipped:Connect(function()
 			dropTool()
 		end
 	end)
+	
+	-- Mobile support: add a screen button if on touch
+	if UserInputService.TouchEnabled and not mobileButton then
+		local player = game.Players.LocalPlayer
+		local playerGui = player:WaitForChild("PlayerGui")
+
+		local screenGui = Instance.new("ScreenGui")
+		screenGui.Name = "DropToolGui"
+		screenGui.ResetOnSpawn = false
+		screenGui.Parent = playerGui
+
+		mobileButton = Instance.new("TextButton")
+		mobileButton.Size = UDim2.new(0, 50, 0, 50)
+		mobileButton.Position = UDim2.new(1, -200, 1, -60) -- bottom right
+		mobileButton.AnchorPoint = Vector2.new(0, 0)
+		mobileButton.Text = "Drop Tool"
+		mobileButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+		mobileButton.TextColor3 = Color3.new(1, 1, 1)
+		mobileButton.Parent = screenGui
+
+		mobileButton.MouseButton1Click:Connect(function()
+			dropTool()
+		end)
+	end
 end)
 
 tool.Unequipped:Connect(function()
