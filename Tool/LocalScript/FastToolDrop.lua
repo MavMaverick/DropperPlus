@@ -6,6 +6,7 @@ local DropToolRequest = ReplicatedStorage.DropToolRequest
 local connection
 local hasFired = false
 
+
 local function dropTool()
 	if hasFired then return end
 	hasFired = true
@@ -97,3 +98,17 @@ tool.Unequipped:Connect(function()
 		connection = nil
 	end
 end)
+
+-- Cleanup on player death, this ensures Gui button removal on death/reset
+local character = tool.Parent
+local humanoid = character.Humanoid
+
+if humanoid then
+	humanoid.Died:Connect(function()
+		if screenGui then
+			screenGui:Destroy()
+			screenGui = nil
+			mobileButton = nil
+		end
+	end)
+end
