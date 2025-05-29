@@ -32,23 +32,23 @@ end
 local mobileButton
 
 tool.Equipped:Connect(function()
-		
-		-- Storing the connection lets you disconnect it later (e.g., when the tool is unequipped)
-		-- Keyboard (PC) support
+
+	-- Storing the connection lets you disconnect it later (e.g., when the tool is unequipped)
+	-- Keyboard (PC) support
 	connection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		-- “If the player pressed the Backspace key, and the game didn’t already use that input for something else,
 		-- then run the code inside.”
 		if not gameProcessed and input.KeyCode == Enum.KeyCode.Backspace then
 			if screenGui then -- If the GUI is already present if mobile detected but using keyboard, destroy it
 				screenGui:Destroy()
+				mobileButton = nil
 			end
 			dropTool()
 		end
 	end)
-	
+
 	-- Mobile support: add a screen button if on touch
 	if UserInputService.TouchEnabled and not mobileButton then
-		print("Tool equippd")
 		local player = game.Players.LocalPlayer
 		local playerGui = player:WaitForChild("PlayerGui")
 
@@ -65,34 +65,44 @@ tool.Equipped:Connect(function()
 		mobileButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
 		mobileButton.TextColor3 = Color3.new(1, 1, 1)
 		mobileButton.Parent = screenGui
-		
+
 		-- 🔵 Add rounded corners
 		local uiCorner = Instance.new("UICorner")
 		uiCorner.CornerRadius = UDim.new(0, 12) -- adjust as desired
 		uiCorner.Parent = mobileButton
 
 		local tapCount = 0
-
+		
 		mobileButton.MouseButton1Click:Connect(function()
 			tapCount += 1
 
 			if tapCount >= 3 then
 				if screenGui then
 					screenGui:Destroy()
+					mobileButton = nil
 				end
 				dropTool()
 				tapCount = 0 -- reset for next time
 			else
 				mobileButton.Text = "Tap " .. (3 - tapCount) .. " more"
+
+				-- Set background color based on tap count
+				if tapCount == 1 then
+					mobileButton.BackgroundColor3 = Color3.fromRGB(191, 127, 0) -- green
+				elseif tapCount == 2 then
+					mobileButton.BackgroundColor3 = Color3.fromRGB(163, 0, 0) -- yellow
+				end
 			end
 		end)
+
 	end
 end)
 
 tool.Unequipped:Connect(function()
 	if screenGui then
 		screenGui:Destroy()
-		end
+		mobileButton = nil
+	end
 	if connection then
 		connection:Disconnect()
 		connection = nil
@@ -112,3 +122,4 @@ if humanoid then
 		end
 	end)
 end
+	
