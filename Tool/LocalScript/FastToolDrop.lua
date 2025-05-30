@@ -32,6 +32,7 @@ end
 local mobileButton
 
 tool.Equipped:Connect(function()
+	
 
 	-- Storing the connection lets you disconnect it later (e.g., when the tool is unequipped)
 	-- Keyboard (PC) support
@@ -96,6 +97,21 @@ tool.Equipped:Connect(function()
 		end)
 
 	end
+	
+	-- Cleanup on player death, this ensures Gui button removal on death/reset
+	local character = tool.Parent
+	local humanoid = character.Humanoid
+
+	if humanoid then
+		humanoid.Died:Connect(function()
+			if screenGui then
+				screenGui:Destroy()
+				screenGui = nil
+				mobileButton = nil
+			end
+		end)
+	end
+
 end)
 
 tool.Unequipped:Connect(function()
@@ -104,22 +120,9 @@ tool.Unequipped:Connect(function()
 		mobileButton = nil
 	end
 	if connection then
+		print("discon")
 		connection:Disconnect()
 		connection = nil
 	end
 end)
 
--- Cleanup on player death, this ensures Gui button removal on death/reset
-local character = tool.Parent
-local humanoid = character.Humanoid
-
-if humanoid then
-	humanoid.Died:Connect(function()
-		if screenGui then
-			screenGui:Destroy()
-			screenGui = nil
-			mobileButton = nil
-		end
-	end)
-end
-	
