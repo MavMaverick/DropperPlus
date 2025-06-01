@@ -32,7 +32,7 @@ end
 local mobileButton
 
 tool.Equipped:Connect(function()
-	
+
 
 	-- Storing the connection lets you disconnect it later (e.g., when the tool is unequipped)
 	-- Keyboard (PC) support
@@ -60,7 +60,29 @@ tool.Equipped:Connect(function()
 
 		mobileButton = Instance.new("TextButton")
 		mobileButton.Size = UDim2.new(0, 50, 0, 50)
-		mobileButton.Position = UDim2.new(1, -200, 1, -60) -- bottom right
+		--[[
+		UDim2.new(XScale, XOffset, YScale, YOffset)
+		
+		XScale (1): 100% of the parent’s width (right edge)
+		XOffset (-60): Move left 60 pixels
+		YScale (1): 100% of the parent’s height (bottom edge)
+		YOffset (-140): Move up 140 pixels
+		
+		]]
+		local configuration = script.Configuration
+		local camera = workspace.CurrentCamera
+		local isPortrait = camera.ViewportSize.Y > camera.ViewportSize.X
+		-- Choose position based on orientation
+		if isPortrait then  -- UDim2.new(XScale, XOffset, YScale, YOffset)
+			local xVal = configuration.PortraitButtonOffsetX.Value
+			local yVal = configuration.PortraitButtonOffsetY.Value
+			mobileButton.Position = UDim2.new(1, xVal, 1, yVal) -- raised to avoid toolbar
+
+		else
+			local xVal = configuration.LandscapeButtonOffsetX.Value
+			local yVal = configuration.LandscapeButtonOffsetY.Value
+			mobileButton.Position = UDim2.new(1, xVal, 1, yVal) -- normal bottom right
+		end
 		mobileButton.AnchorPoint = Vector2.new(0, 0)
 		mobileButton.Text = "Drop Tool"
 		mobileButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
@@ -73,7 +95,7 @@ tool.Equipped:Connect(function()
 		uiCorner.Parent = mobileButton
 
 		local tapCount = 0
-		
+
 		mobileButton.MouseButton1Click:Connect(function()
 			tapCount += 1
 
@@ -97,7 +119,7 @@ tool.Equipped:Connect(function()
 		end)
 
 	end
-	
+
 	-- Cleanup on player death, this ensures Gui button removal on death/reset
 	local character = tool.Parent
 	local humanoid = character.Humanoid
@@ -120,9 +142,10 @@ tool.Unequipped:Connect(function()
 		mobileButton = nil
 	end
 	if connection then
-		print("discon")
 		connection:Disconnect()
 		connection = nil
 	end
 end)
+
+
 
