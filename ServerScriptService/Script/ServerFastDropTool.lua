@@ -21,6 +21,7 @@ DropToolRequest.OnServerEvent:Connect(function(player, tool, rightGrip)
 		handle.Anchored = false
 		local dropLocationOffsetZ = tool.FastToolDrop.Configuration.DropLocationOffsetZ.Value
 		local dropLocationOffsetY = tool.FastToolDrop.Configuration.DropLocationOffsetY.Value
+		local dropLocationOffsetX = tool.FastToolDrop.Configuration.DropLocationOffsetX.Value
 
 		
 		local forwardCFrame = currentPivot * CFrame.new(0, dropLocationOffsetY, dropLocationOffsetZ) --(-2 Z Axis) move 2 studs forward relative to tool's facing (any less not recommended)
