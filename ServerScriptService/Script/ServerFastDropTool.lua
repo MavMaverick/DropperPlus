@@ -24,7 +24,7 @@ DropToolRequest.OnServerEvent:Connect(function(player, tool, rightGrip)
 		local dropLocationOffsetX = tool.FastToolDrop.Configuration.DropLocationOffsetX.Value
 
 		
-		local forwardCFrame = currentPivot * CFrame.new(0, dropLocationOffsetY, dropLocationOffsetZ) --(-2 Z Axis) move 2 studs forward relative to tool's facing (any less not recommended)
+		local forwardCFrame = currentPivot * CFrame.new(dropLocationOffsetX, dropLocationOffsetY, dropLocationOffsetZ) --(-2 Z Axis) move 2 studs forward relative to tool's facing (any less not recommended)
 		tool:PivotTo(forwardCFrame)
 
 		-- Step 1: Give player temp network ownership, this allows smooth dropping for player
