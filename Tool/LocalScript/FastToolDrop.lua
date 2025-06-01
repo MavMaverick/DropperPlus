@@ -60,7 +60,15 @@ tool.Equipped:Connect(function()
 
 		mobileButton = Instance.new("TextButton")
 		mobileButton.Size = UDim2.new(0, 50, 0, 50)
-		mobileButton.Position = UDim2.new(1, -200, 1, -60) -- bottom right
+
+		local camera = workspace.CurrentCamera
+		local isPortrait = camera.ViewportSize.Y > camera.ViewportSize.X
+		-- Choose position based on orientation
+		if isPortrait then
+			mobileButton.Position = UDim2.new(1, -60, 1, -140) -- raised to avoid toolbar
+		else
+			mobileButton.Position = UDim2.new(1, -160, 1, -60) -- normal bottom right
+		end
 		mobileButton.AnchorPoint = Vector2.new(0, 0)
 		mobileButton.Text = "Drop Tool"
 		mobileButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
