@@ -4,7 +4,7 @@ local DropToolRequest = ReplicatedStorage:WaitForChild("DropToolRequest")
 DropToolRequest.OnServerEvent:Connect(function(player, tool, rightGrip)
 	if not tool or not player then return end
 
-	local currentPivot = tool:GetPivot() -- We want then direction of the tool to use later
+	--local currentPivot = tool:GetPivot() -- We want then direction of the tool to use later
 	if rightGrip then
 		rightGrip:Destroy() -- Remove tool weld to player, normally done by Roblox
 	else
@@ -15,6 +15,10 @@ DropToolRequest.OnServerEvent:Connect(function(player, tool, rightGrip)
 
 	local handle = tool.Handle
 	
+	local character = player.Character
+	if not character then return end
+	local currentPivot = character:GetPivot() -- Use character orientation, not tool's
+	
 	if handle then
 		-- Roblox disables CanCollide while using tool, we want it on so no fall through floor
 		handle.CanCollide = true
@@ -24,8 +28,11 @@ DropToolRequest.OnServerEvent:Connect(function(player, tool, rightGrip)
 		local dropLocationOffsetX = tool.FastToolDrop.Configuration.DropLocationOffsetX.Value
 
 		
-		local forwardCFrame = currentPivot * CFrame.new(dropLocationOffsetX, dropLocationOffsetY, dropLocationOffsetZ) --(-2 Z Axis) move 2 studs forward relative to tool's facing (any less not recommended)
-		tool:PivotTo(forwardCFrame)
+		-- Offset in character's local space (e.g., forward from player, not tool)
+		local dropOffset = CFrame.new(dropLocationOffsetX, dropLocationOffsetY, dropLocationOffsetZ)
+		local dropCFrame = currentPivot * dropOffset
+
+		tool:PivotTo(dropCFrame)
 
 		-- Step 1: Give player temp network ownership, this allows smooth dropping for player
 		handle:SetNetworkOwner(player)
