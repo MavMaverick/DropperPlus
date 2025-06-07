@@ -1,8 +1,43 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DropToolRequest = ReplicatedStorage:WaitForChild("DropToolRequest")
 
+-- Spam protection per player
+local callTracker = {}
+local timeWindow = 1 -- seconds
+local maxCallsPerWindow = 8 -- Max requests allowed in time window
+
 DropToolRequest.OnServerEvent:Connect(function(player, tool, rightGrip)
 	if not tool or not player then return end
+
+	local now = time()
+	local userId = player.UserId
+
+	-- Set up tracking table for the player if needed
+	if not callTracker[userId] then
+		callTracker[userId] = {
+			count = 0,
+			windowStart = now
+		}
+	end
+
+	local tracker = callTracker[userId]
+
+	-- Reset count if the time window has passed
+	if now - tracker.windowStart > timeWindow then
+		tracker.count = 0
+		tracker.windowStart = now
+	end
+
+	-- Increment call count
+	tracker.count += 1
+
+	-- Enforce rate limit
+	if tracker.count > maxCallsPerWindow then
+		player:Kick("You have been removed for spamming tools.")
+		return
+	end
+
+	-- == NORMAL TOOL DROP LOGIC BELOW == --
 
 	--local currentPivot = tool:GetPivot() -- We want then direction of the tool to use later
 	if rightGrip then
