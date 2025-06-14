@@ -45,9 +45,20 @@ tool.Equipped:Connect(function()
 				mobileButton = nil
 			end
 			dropTool()
+			
+			-- Gamepad support (Console/Controller)
+		elseif input.UserInputType == Enum.UserInputType.Gamepad1 and input.KeyCode == Enum.KeyCode.ButtonB then
+			if screenGui then
+				screenGui:Destroy()
+				mobileButton = nil
+			end
+			dropTool()
 		end
+		
+		
 	end)
-
+	
+	
 	-- Mobile support: add a screen button if on touch
 	if UserInputService.TouchEnabled and not mobileButton then
 		local player = game.Players.LocalPlayer
