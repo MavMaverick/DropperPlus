@@ -25,7 +25,18 @@ local function dropTool()
 	end
 	--print("Tool dropped")
 	if rightGrip then
-		DropToolRequest:FireServer(tool, rightGrip)
+		local player = game.Players.LocalPlayer
+		local ping = player:GetNetworkPing()*2000 -- * 1000 to convert to miliseconds, * 2 to represent round trip
+		if ping > 120 then
+			print("Lag", ping)
+			-- Laggy, so we parent to make characte "lower" their tool, showing it is dropping until server acts
+			tool.Parent = workspace
+			DropToolRequest:FireServer(tool, rightGrip)
+		else
+			print("nonlag", ping)
+			-- Not much lag, no parenting needed to offset visual delay of dropping tool
+			DropToolRequest:FireServer(tool, rightGrip)
+		end
 	end
 end
 
@@ -45,7 +56,7 @@ tool.Equipped:Connect(function()
 				mobileButton = nil
 			end
 			dropTool()
-			
+
 			-- Gamepad support (Console/Controller)
 		elseif input.UserInputType == Enum.UserInputType.Gamepad1 and input.KeyCode == Enum.KeyCode.ButtonB then
 			if screenGui then
@@ -54,11 +65,11 @@ tool.Equipped:Connect(function()
 			end
 			dropTool()
 		end
-		
-		
+
+
 	end)
-	
-	
+
+
 	-- Mobile support: add a screen button if on touch
 	if UserInputService.TouchEnabled and not mobileButton then
 		local player = game.Players.LocalPlayer
