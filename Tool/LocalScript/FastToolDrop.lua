@@ -6,10 +6,8 @@ local DropToolRequest = ReplicatedStorage.DropToolRequest
 local connection
 local hasFired = false
 
-
 local function dropTool()
 	if hasFired then return end
-	hasFired = true
 	local character = tool.Parent
 	local rightHand
 	local rightGrip
@@ -32,10 +30,12 @@ local function dropTool()
 			-- Laggy, so we parent to make characte "lower" their tool, showing it is dropping until server acts
 			tool.Parent = workspace
 			DropToolRequest:FireServer(tool, rightGrip)
+			hasFired = true
 		else
 			print("nonlag", ping)
 			-- Not much lag, no parenting needed to offset visual delay of dropping tool
 			DropToolRequest:FireServer(tool, rightGrip)
+			hasFired = true
 		end
 	end
 end
@@ -168,6 +168,8 @@ tool.Unequipped:Connect(function()
 		connection = nil
 	end
 end)
+
+
 
 
 
