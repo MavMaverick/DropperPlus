@@ -17,9 +17,9 @@ local function toolIntoWorld(tool, player)
 		-- Roblox disables CanCollide while using tool, we want it on so no fall through floor
 		handle.CanCollide = true
 		handle.Anchored = false
-		local dropLocationOffsetZ = tool.FastToolDrop.Configuration.DropLocationOffsetZ.Value
-		local dropLocationOffsetY = tool.FastToolDrop.Configuration.DropLocationOffsetY.Value
-		local dropLocationOffsetX = tool.FastToolDrop.Configuration.DropLocationOffsetX.Value
+		local dropLocationOffsetZ = ReplicatedStorage.FastToolDrop.Configuration.DropLocationOffsetZ.Value
+		local dropLocationOffsetY = ReplicatedStorage.FastToolDrop.Configuration.DropLocationOffsetY.Value
+		local dropLocationOffsetX = ReplicatedStorage.FastToolDrop.Configuration.DropLocationOffsetX.Value
 
 		-- Offset in character's local space (e.g., forward from player, not tool)
 		local dropOffset = CFrame.new(dropLocationOffsetX, dropLocationOffsetY, dropLocationOffsetZ)
