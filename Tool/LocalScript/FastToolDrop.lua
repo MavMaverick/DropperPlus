@@ -1,11 +1,12 @@
-local tool = script.Parent
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DropToolRequest = ReplicatedStorage.DropToolRequest
 
+local tool = script.Parent
 local connection
 local hasFired = false
-
+local mobileButton
+local screenGui
 
 
 local function dropTool(tool, rightGrip, scriptStartTime)
@@ -34,7 +35,6 @@ local function dropTool(tool, rightGrip, scriptStartTime)
 	end
 end
 
-local mobileButton
 
 tool.Equipped:Connect(function()
 	local scriptStartTime = time() -- Track when script starts
@@ -193,8 +193,3 @@ tool.Unequipped:Connect(function()
 		connection = nil
 	end
 end)
-
-
-
-
-
