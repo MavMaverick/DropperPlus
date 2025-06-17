@@ -8,7 +8,7 @@ local hasFired = false
 
 
 
-local function dropTool(tool, rightGrip)
+local function dropTool(tool, rightGrip, scriptStartTime)
 	if hasFired then return end
 	if time() - scriptStartTime < .1 then
 		warn("Too soon to drop tool.")
@@ -37,7 +37,7 @@ end
 local mobileButton
 
 tool.Equipped:Connect(function()
-	scriptStartTime = time() -- Track when script starts
+	local scriptStartTime = time() -- Track when script starts
 	print("Equipped", tool.Name)
 	
 	local character = tool.Parent
@@ -81,7 +81,7 @@ tool.Equipped:Connect(function()
 				screenGui:Destroy()
 				mobileButton = nil
 			end
-			dropTool(tool, rightGrip)
+			dropTool(tool, rightGrip, scriptStartTime)
 
 			-- Gamepad support (Console/Controller)
 		elseif input.UserInputType == Enum.UserInputType.Gamepad1 and input.KeyCode == Enum.KeyCode.ButtonB then
@@ -89,7 +89,7 @@ tool.Equipped:Connect(function()
 				screenGui:Destroy()
 				mobileButton = nil
 			end
-			dropTool(tool, rightGrip)
+			dropTool(tool, rightGrip, scriptStartTime)
 		end
 
 
@@ -151,7 +151,7 @@ tool.Equipped:Connect(function()
 					screenGui:Destroy()
 					mobileButton = nil
 				end
-				dropTool(tool, rightGrip)
+				dropTool(tool, rightGrip, scriptStartTime)
 				tapCount = 0 -- reset for next time
 			else
 				mobileButton.Text = "Tap " .. (3 - tapCount) .. " more"
