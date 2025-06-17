@@ -6,21 +6,15 @@ local DropToolRequest = ReplicatedStorage.DropToolRequest
 local connection
 local hasFired = false
 
-local function dropTool()
-	if hasFired then return end
-	local character = tool.Parent
-	local rightHand
-	local rightGrip
 
-	-- Check for R15 first (RightHand exists)
-	if character:FindFirstChild("RightHand") then
-		rightHand = character.RightHand
-		rightGrip = rightHand.RightGrip
-	else
-		-- Fallback to R6 (Right Arm)
-		rightHand = character["Right Arm"]
-		rightGrip = rightHand.RightGrip
+
+local function dropTool(tool, rightGrip)
+	if hasFired then return end
+	if time() - scriptStartTime < .1 then
+		warn("Too soon to drop tool.")
+		return
 	end
+
 	--print("Tool dropped")
 	if rightGrip then
 		local player = game.Players.LocalPlayer
@@ -32,7 +26,7 @@ local function dropTool()
 			DropToolRequest:FireServer(tool, rightGrip)
 			hasFired = true
 		else
-			print("nonlag", ping)
+			print("nonlag", tool.Name, ping)
 			-- Not much lag, no parenting needed to offset visual delay of dropping tool
 			DropToolRequest:FireServer(tool, rightGrip)
 			hasFired = true
@@ -43,7 +37,39 @@ end
 local mobileButton
 
 tool.Equipped:Connect(function()
-
+	scriptStartTime = time() -- Track when script starts
+	print("Equipped", tool.Name)
+	
+	local character = tool.Parent
+	local rightHand
+	local rightGrip
+	
+	-- Check for R15 first (RightHand exists)
+	if character:FindFirstChild("RightHand") then
+		rightHand = character.RightHand
+		rightGrip = rightHand.RightGrip
+	else
+		-- Fallback to R6 (Right Arm)
+		rightHand = character["Right Arm"]
+		rightGrip = rightHand.RightGrip
+	end
+	
+	-- destroy desynced copies of tools (local only, server can't see them) that are welded to players hand but not in their inventory
+	-- Exact cause unknown
+	if rightHand then
+		local children = rightHand:GetChildren()
+		for i = 1, #children do
+			local weld = children[i]
+			if weld.Name == "RightGrip" then
+				local part = weld.Part1
+				if part.Parent ~= tool then
+					warn("destroyed local copy of desync welded tool")
+					weld:Destroy()
+					break
+				end
+			end
+		end
+	end
 
 	-- Storing the connection lets you disconnect it later (e.g., when the tool is unequipped)
 	-- Keyboard (PC) support
@@ -55,7 +81,7 @@ tool.Equipped:Connect(function()
 				screenGui:Destroy()
 				mobileButton = nil
 			end
-			dropTool()
+			dropTool(tool, rightGrip)
 
 			-- Gamepad support (Console/Controller)
 		elseif input.UserInputType == Enum.UserInputType.Gamepad1 and input.KeyCode == Enum.KeyCode.ButtonB then
@@ -63,13 +89,12 @@ tool.Equipped:Connect(function()
 				screenGui:Destroy()
 				mobileButton = nil
 			end
-			dropTool()
+			dropTool(tool, rightGrip)
 		end
 
 
 	end)
-
-
+	
 	-- Mobile support: add a screen button if on touch
 	if UserInputService.TouchEnabled and not mobileButton then
 		local player = game.Players.LocalPlayer
@@ -111,7 +136,7 @@ tool.Equipped:Connect(function()
 		mobileButton.TextColor3 = Color3.new(1, 1, 1)
 		mobileButton.Parent = screenGui
 
-		-- 🔵 Add rounded corners
+		-- Add rounded corners
 		local uiCorner = Instance.new("UICorner")
 		uiCorner.CornerRadius = UDim.new(0, 12) -- adjust as desired
 		uiCorner.Parent = mobileButton
@@ -126,7 +151,7 @@ tool.Equipped:Connect(function()
 					screenGui:Destroy()
 					mobileButton = nil
 				end
-				dropTool()
+				dropTool(tool, rightGrip)
 				tapCount = 0 -- reset for next time
 			else
 				mobileButton.Text = "Tap " .. (3 - tapCount) .. " more"
