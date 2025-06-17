@@ -10,13 +10,25 @@ local screenGui
 
 
 local function dropTool(tool, rightGrip, scriptStartTime)
+	-- Debounce
 	if hasFired then return end
+	
+	local player = game.Players.LocalPlayer
+	local character = player and player.Character
+	local humanoid = character and character:FindFirstChild("Humanoid")
+
+	local isDead = humanoid and humanoid.Health <= 0
+	-- Prevent tool dropping when dead
+	if isDead then
+		print("Dead man")
+		return
+	end
+	-- Prevent double-dropping from dropping too quickly, this is optional
 	if time() - scriptStartTime < .1 then
 		warn("Too soon to drop tool.")
 		return
 	end
 
-	--print("Tool dropped")
 	if rightGrip then
 		local player = game.Players.LocalPlayer
 		local ping = player:GetNetworkPing()*2000 -- * 1000 to convert to miliseconds, * 2 to represent round trip
@@ -39,11 +51,11 @@ end
 tool.Equipped:Connect(function()
 	local scriptStartTime = time() -- Track when script starts
 	print("Equipped", tool.Name)
-	
+
 	local character = tool.Parent
 	local rightHand
 	local rightGrip
-	
+
 	-- Check for R15 first (RightHand exists)
 	if character:FindFirstChild("RightHand") then
 		rightHand = character.RightHand
@@ -53,7 +65,7 @@ tool.Equipped:Connect(function()
 		rightHand = character["Right Arm"]
 		rightGrip = rightHand.RightGrip
 	end
-	
+
 	-- destroy desynced copies of tools (local only, server can't see them) that are welded to players hand but not in their inventory
 	-- Exact cause unknown
 	if rightHand then
@@ -94,7 +106,7 @@ tool.Equipped:Connect(function()
 
 
 	end)
-	
+
 	-- Mobile support: add a screen button if on touch
 	if UserInputService.TouchEnabled and not mobileButton then
 		local player = game.Players.LocalPlayer
