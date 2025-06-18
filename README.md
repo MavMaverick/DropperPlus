@@ -1,8 +1,9 @@
 # Dropper+
 
-![Dropper+](https://github.com/user-attachments/assets/c9434abd-844b-4777-b676-7e6714a11111)
 
-**Dropper+** is a drop-in replacement for Roblox's native `CanBeDropped` tool behavior.  
+![Dropper+_resized](https://github.com/user-attachments/assets/4e872e4d-a62c-4d21-8843-0d3ffd8ce156)
+
+**Dropper-Plus** is a drop-in replacement for Roblox's native `CanBeDropped` tool behavior.  
 It offers smooth, customizable, and cross-platform tool-dropping functionality — with support for **PC**, **Mobile**, and **Console**.
 
 ### ✨ Features
