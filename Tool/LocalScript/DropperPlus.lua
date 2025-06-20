@@ -142,13 +142,13 @@ tool.Equipped:Connect(function()
 		local isPortrait = camera.ViewportSize.Y > camera.ViewportSize.X
 		-- Choose position based on orientation
 		if isPortrait then  -- UDim2.new(XScale, XOffset, YScale, YOffset)
-			local xVal = configuration.PortraitButtonOffsetX.Value
-			local yVal = configuration.PortraitButtonOffsetY.Value
+			local xVal = configuration.MobileFolder.PortraitButtonOffsetX.Value
+			local yVal = configuration.MobileFolder.PortraitButtonOffsetY.Value
 			mobileButton.Position = UDim2.new(1, xVal, 1, yVal) -- raised to avoid toolbar
 
 		else
-			local xVal = configuration.LandscapeButtonOffsetX.Value
-			local yVal = configuration.LandscapeButtonOffsetY.Value
+			local xVal = configuration.MobileFolder.LandscapeButtonOffsetX.Value
+			local yVal = configuration.MobileFolder.LandscapeButtonOffsetY.Value
 			mobileButton.Position = UDim2.new(1, xVal, 1, yVal) -- normal bottom right
 		end
 		mobileButton.AnchorPoint = Vector2.new(0, 0)
@@ -165,27 +165,36 @@ tool.Equipped:Connect(function()
 		local tapCount = 0
 
 		mobileButton.MouseButton1Click:Connect(function()
-			tapCount += 1
+			local configuration = script.Configuration
+			if configuration.MobileFolder.MultiTapEnabled.Value == true then
+				debugLog(warn, "[MOBILE] Multi Tap Drop in configure.MobileFolder is enabled")
+				tapCount += 1
+				if tapCount >= 3 then
+					if screenGui then
+						screenGui:Destroy()
+						mobileButton = nil
+					end
+					dropTool(tool, rightGrip, scriptStartTime)
+					tapCount = 0 -- reset for next time
+				else
+					mobileButton.Text = "Tap " .. (3 - tapCount) .. " more"
 
-			if tapCount >= 3 then
+					-- Set background color based on tap count
+					if tapCount == 1 then
+						mobileButton.BackgroundColor3 = Color3.fromRGB(191, 127, 0) -- Orange
+					elseif tapCount == 2 then
+						mobileButton.BackgroundColor3 = Color3.fromRGB(163, 0, 0) -- Red
+					end
+				end
+			else
+				debugLog(warn, "[MOBILE] Multi Tap Drop is disabled")
 				if screenGui then
 					screenGui:Destroy()
 					mobileButton = nil
 				end
 				dropTool(tool, rightGrip, scriptStartTime)
-				tapCount = 0 -- reset for next time
-			else
-				mobileButton.Text = "Tap " .. (3 - tapCount) .. " more"
-
-				-- Set background color based on tap count
-				if tapCount == 1 then
-					mobileButton.BackgroundColor3 = Color3.fromRGB(191, 127, 0) -- green
-				elseif tapCount == 2 then
-					mobileButton.BackgroundColor3 = Color3.fromRGB(163, 0, 0) -- yellow
-				end
 			end
 		end)
-
 	end
 
 	-- Cleanup on player death, this ensures Gui button removal on death/reset

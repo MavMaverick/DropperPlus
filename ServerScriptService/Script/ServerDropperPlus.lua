@@ -29,10 +29,10 @@ local function toolIntoWorld(tool, player)
 		
 		-- Normally OffsetZ is negative, this just lets you have a postive number in the config. It makes more sense
 		-- to have a tool with 4 than thinking of it as -4 "why is it 4 studs forward if -4???""
-		local rawOffsetZ = ReplicatedStorage.DropperPlus.Configuration.DropLocationOffsetZ.Value
+		local rawOffsetZ = ReplicatedStorage.DropperPlus.Configuration.DropLocationFolder.DropOffsetZ.Value
 		local dropLocationOffsetZ = -math.abs(rawOffsetZ)
-		local dropLocationOffsetY = ReplicatedStorage.DropperPlus.Configuration.DropLocationOffsetY.Value
-		local dropLocationOffsetX = ReplicatedStorage.DropperPlus.Configuration.DropLocationOffsetX.Value
+		local dropLocationOffsetY = ReplicatedStorage.DropperPlus.Configuration.DropLocationFolder.DropOffsetY.Value
+		local dropLocationOffsetX = ReplicatedStorage.DropperPlus.Configuration.DropLocationFolder.DropOffsetX.Value
 
 		-- Offset in character's local space (e.g., forward from player, not tool)
 		local dropOffset = CFrame.new(dropLocationOffsetX, dropLocationOffsetY, dropLocationOffsetZ)
