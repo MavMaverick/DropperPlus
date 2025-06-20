@@ -26,7 +26,11 @@ local function toolIntoWorld(tool, player)
 		-- Roblox disables CanCollide while using tool, we want it on so no fall through floor
 		handle.CanCollide = true
 		handle.Anchored = false
-		local dropLocationOffsetZ = ReplicatedStorage.DropperPlus.Configuration.DropLocationOffsetZ.Value
+		
+		-- Normally OffsetZ is negative, this just lets you have a postive number in the config. It makes more sense
+		-- to have a tool with 4 than thinking of it as -4 "why is it 4 studs forward if -4???""
+		local rawOffsetZ = ReplicatedStorage.DropperPlus.Configuration.DropLocationOffsetZ.Value
+		local dropLocationOffsetZ = -math.abs(rawOffsetZ)
 		local dropLocationOffsetY = ReplicatedStorage.DropperPlus.Configuration.DropLocationOffsetY.Value
 		local dropLocationOffsetX = ReplicatedStorage.DropperPlus.Configuration.DropLocationOffsetX.Value
 
@@ -38,11 +42,13 @@ local function toolIntoWorld(tool, player)
 
 		-- Step 1: Give player temp network ownership, this allows smooth dropping for player
 		handle:SetNetworkOwner(player)
+		local networkOwnTime = time()
 
 		-- Step 2: After short delay, return control to server only if it's still in workspacen (prevents slow movement)
 		task.delay(1, function()
 			if handle:IsDescendantOf(workspace) and tool.Parent == workspace then
 				handle:SetNetworkOwner(nil)
+				debugLog(print, character.Name, tool.Name, "Network ownership returned to server after", string.format("%.2f",(time()-networkOwnTime)))
 			end
 		end)
 	end
