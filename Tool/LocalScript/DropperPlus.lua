@@ -127,7 +127,13 @@ tool.Equipped:Connect(function()
 		screenGui.Parent = playerGui
 
 		mobileButton = Instance.new("TextButton")
-		mobileButton.Size = UDim2.new(0, 50, 0, 50)
+		local configuration = script.Configuration
+		
+		local buttonSize = configuration.MobileFolder.ButtonSize.Value
+
+		mobileButton.Size = UDim2.new(0, buttonSize, 0, buttonSize)
+
+		--mobileButton.Size = UDim2.new(0, 50, 0, 50)
 		--[[
 		UDim2.new(XScale, XOffset, YScale, YOffset)
 		
@@ -137,7 +143,7 @@ tool.Equipped:Connect(function()
 		YOffset (-140): Move up 140 pixels
 		
 		]]
-		local configuration = script.Configuration
+
 		local camera = workspace.CurrentCamera
 		local isPortrait = camera.ViewportSize.Y > camera.ViewportSize.X
 		-- Choose position based on orientation
@@ -154,14 +160,34 @@ tool.Equipped:Connect(function()
 		mobileButton.AnchorPoint = Vector2.new(0, 0)
 		mobileButton.Text = "Drop Tool"
 		mobileButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+		mobileButton.BackgroundTransparency = 0.25 -- semi-transparent
 		mobileButton.TextColor3 = Color3.new(1, 1, 1)
 		mobileButton.Parent = screenGui
 
 		-- Add rounded corners
 		local uiCorner = Instance.new("UICorner")
-		uiCorner.CornerRadius = UDim.new(0, 12) -- adjust as desired
+		uiCorner.CornerRadius = UDim.new(1, 0) -- adjust as desired
 		uiCorner.Parent = mobileButton
+		
+		-- Create the inner white ring effect
+		local ring = Instance.new("Frame")
+		ring.Size = UDim2.new(0.9, 0, 0.9, 0) -- Slightly inset
+		ring.Position = UDim2.new(0.05, 0, 0.05, 0)
+		ring.BackgroundTransparency = 1
+		ring.Parent = mobileButton
+		
+		local ringStroke = Instance.new("UIStroke")
+		ringStroke.Thickness = 2
+		ringStroke.Color = Color3.fromRGB(255, 255, 255)
+		ringStroke.Transparency = 0.6 -- Subtle
+		ringStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		ringStroke.Parent = ring
 
+		local ringCorner = Instance.new("UICorner")
+		ringCorner.CornerRadius = UDim.new(1, 0)
+		ringCorner.Parent = ring
+		
+		
 		local tapCount = 0
 
 		mobileButton.MouseButton1Click:Connect(function()
