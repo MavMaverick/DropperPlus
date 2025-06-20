@@ -14,7 +14,6 @@ local DEBUG = true
 local debugLog = DEBUG and function(logFn, ...)
 	logFn("[DEBUG]", ...)
 end or function() end
-
 	
 local function dropTool(tool, rightGrip, scriptStartTime)
 	-- Debounce
@@ -58,7 +57,6 @@ end
 
 tool.Equipped:Connect(function()
 	local scriptStartTime = time() -- Track when script starts
-
 	local character = tool.Parent
 	debugLog(print, character.Name, "Equipped", tool.Name)
 	local rightHand
@@ -68,10 +66,13 @@ tool.Equipped:Connect(function()
 	if character:FindFirstChild("RightHand") then
 		rightHand = character.RightHand
 		rightGrip = rightHand.RightGrip
-	else
+	elseif character:FindFirstChild("Right Arm") then
 		-- Fallback to R6 (Right Arm)
 		rightHand = character["Right Arm"]
 		rightGrip = rightHand.RightGrip
+	else
+		debugLog(warn, character.Name, "No Hand or arm detected")
+		return
 	end
 
 	-- destroy desynced copies of tools (local only, server can't see them) that are welded to players hand but not in their inventory
