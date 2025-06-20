@@ -6,6 +6,15 @@ local callTracker = {}
 local timeWindow = 1 -- seconds
 local maxCallsPerWindow = 8 -- Max requests allowed in time window
 
+
+local DEBUG = true
+
+-- Define the debugLog function
+local debugLog = DEBUG and function(logFn, ...)
+	logFn("[DEBUG]", ...)
+end or function() end
+
+
 local function toolIntoWorld(tool, player)
 	tool.Parent = workspace -- Tool no longer a child of character
 	local handle = tool.Handle
@@ -17,9 +26,9 @@ local function toolIntoWorld(tool, player)
 		-- Roblox disables CanCollide while using tool, we want it on so no fall through floor
 		handle.CanCollide = true
 		handle.Anchored = false
-		local dropLocationOffsetZ = ReplicatedStorage.FastToolDrop.Configuration.DropLocationOffsetZ.Value
-		local dropLocationOffsetY = ReplicatedStorage.FastToolDrop.Configuration.DropLocationOffsetY.Value
-		local dropLocationOffsetX = ReplicatedStorage.FastToolDrop.Configuration.DropLocationOffsetX.Value
+		local dropLocationOffsetZ = ReplicatedStorage.DropperPlus.Configuration.DropLocationOffsetZ.Value
+		local dropLocationOffsetY = ReplicatedStorage.DropperPlus.Configuration.DropLocationOffsetY.Value
+		local dropLocationOffsetX = ReplicatedStorage.DropperPlus.Configuration.DropLocationOffsetX.Value
 
 		-- Offset in character's local space (e.g., forward from player, not tool)
 		local dropOffset = CFrame.new(dropLocationOffsetX, dropLocationOffsetY, dropLocationOffsetZ)
@@ -75,11 +84,11 @@ DropToolRequest.OnServerEvent:Connect(function(player, tool, rightGrip)
 	--local currentPivot = tool:GetPivot() -- We want then direction of the tool to use later
 	if rightGrip then
 		rightGrip:Destroy() -- Remove tool weld to player, normally done by Roblox
-		print(tool, "Weld destroyed", tool.Name)
+		debugLog(print, player.Name, tool.Name, "Weld destroyed, parenting to workspace...")
 		toolIntoWorld(tool, player)
 	else
 		-- I'm not ENTIRELY sure why this happens, but spamming tool drop and picking up does this
-		warn(tool, " rightGrip was nil — likely due to rapid equip/drop")
+		debugLog(warn, player.Name, tool, "rightGrip weld was nil — likely due to rapid equip/drop, parenting to workspace...")
 		toolIntoWorld(tool, player)
 	end
 end)

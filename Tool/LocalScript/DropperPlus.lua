@@ -8,7 +8,14 @@ local hasFired = false
 local mobileButton
 local screenGui
 
+local DEBUG = true
 
+-- Define the debugLog function
+local debugLog = DEBUG and function(logFn, ...)
+	logFn("[DEBUG]", ...)
+end or function() end
+
+	
 local function dropTool(tool, rightGrip, scriptStartTime)
 	-- Debounce
 	if hasFired then return end
@@ -20,26 +27,27 @@ local function dropTool(tool, rightGrip, scriptStartTime)
 	local isDead = humanoid and humanoid.Health <= 0
 	-- Prevent tool dropping when dead
 	if isDead then
-		print("Dead man")
+		debugLog(print, player.Name, "attempted tool drop while 0 health")
 		return
 	end
 	-- Prevent double-dropping from dropping too quickly, this is optional
-	if time() - scriptStartTime < .1 then
-		warn("Too soon to drop tool.")
-		return
-	end
+	--if time() - scriptStartTime < .01 then
+	--	warn("Too soon to drop tool.")
+	--	return
+	--end
 
 	if rightGrip then
 		local player = game.Players.LocalPlayer
 		local ping = player:GetNetworkPing()*2000 -- * 1000 to convert to miliseconds, * 2 to represent round trip
-		if ping > 120 then
-			print("Lag", ping)
+		local pingLimit = 120
+		if ping > pingLimit then
+			debugLog(print, player.Name, "ping >", pingLimit, "LAG, locally parenting tool to workspace")
 			-- Laggy, so we parent to make characte "lower" their tool, showing it is dropping until server acts
 			tool.Parent = workspace
 			DropToolRequest:FireServer(tool, rightGrip)
 			hasFired = true
 		else
-			print("nonlag", tool.Name, ping)
+			debugLog(print, player.Name, "ping <", pingLimit, "NO LAG, firing remote only")
 			-- Not much lag, no parenting needed to offset visual delay of dropping tool
 			DropToolRequest:FireServer(tool, rightGrip)
 			hasFired = true
@@ -50,9 +58,9 @@ end
 
 tool.Equipped:Connect(function()
 	local scriptStartTime = time() -- Track when script starts
-	print("Equipped", tool.Name)
 
 	local character = tool.Parent
+	debugLog(print, character.Name, "Equipped", tool.Name)
 	local rightHand
 	local rightGrip
 
@@ -75,8 +83,8 @@ tool.Equipped:Connect(function()
 			if weld.Name == "RightGrip" then
 				local part = weld.Part1
 				if part.Parent ~= tool then
-					warn("destroyed local copy of desync welded tool")
 					weld:Destroy()
+					debugLog(warn, "Destroyed duplicate unequipped tool weld of", tool.Name, " welded to", character.Name)
 					break
 				end
 			end
@@ -185,6 +193,7 @@ tool.Equipped:Connect(function()
 
 	if humanoid then
 		humanoid.Died:Connect(function()
+			debugLog(print, game.Players.LocalPlayer.Name, "Died and previously equipped", tool.Name)
 			if screenGui then
 				screenGui:Destroy()
 				screenGui = nil
@@ -196,6 +205,7 @@ tool.Equipped:Connect(function()
 end)
 
 tool.Unequipped:Connect(function()
+	debugLog(print, game.Players.LocalPlayer.Name, "Unequipped", tool.Name)
 	if screenGui then
 		screenGui:Destroy()
 		mobileButton = nil
